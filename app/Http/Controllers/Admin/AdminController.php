@@ -115,16 +115,27 @@ class AdminController extends Controller
     public function schedule()
     {
         $availabilityRequests = AvailabilityRequest::with('counselor')->where('status', 'pending')->latest()->get();
-        $pendingSessionRequests = SessionRequest::with('student')->where('status', 'pending')->latest()->get();
+        $pendingSessionRequests = SessionRequest::with('student', 'counselor')->where('status', 'pending')->latest()->get();
         $counselors = Counselor::all();
+        $blockedTimes = \App\Models\BlockedTime::with('counselor')->orderBy('date', 'desc')->get();
 
-        return view('admin.schedule', compact('availabilityRequests', 'pendingSessionRequests', 'counselors'));
+        return view('admin.schedule', compact('availabilityRequests', 'pendingSessionRequests', 'counselors', 'blockedTimes'));
     }
 
     public function approveAvailability($id)
     {
-        AvailabilityRequest::findOrFail($id)->update(['status' => 'Approved']);
-        return redirect()->back()->with('success', 'Availability approved.');
+        $request = AvailabilityRequest::findOrFail($id);
+        $request->update(['status' => 'Approved']);
+
+        \App\Models\BlockedTime::create([
+            'counselor_id' => $request->counselor_id,
+            'date' => $request->date,
+            'start_time' => $request->start_time,
+            'end_time' => $request->end_time,
+            'reason' => $request->notes ?? 'Approved Leave'
+        ]);
+
+        return redirect()->back()->with('success', 'Leave request approved and schedule blocked.');
     }
 
     public function rejectAvailability($id)
@@ -141,17 +152,83 @@ class AdminController extends Controller
         ]);
 
         $sessionReq = SessionRequest::findOrFail($request->session_request_id);
+        
+        $date = $sessionReq->preferred_date ?? today()->toDateString();
+        if (\Carbon\Carbon::parse($date)->isWeekend()) {
+            return redirect()->back()->with('error', 'Saturdays and Sundays cannot be scheduled.');
+        }
+
         $sessionReq->update(['status' => 'assigned']);
 
         CounselingSession::create([
             'student_id' => $sessionReq->student_id,
             'counselor_id' => $request->counselor_id,
-            'date' => $sessionReq->preferred_date ?? today(),
+            'date' => $date,
             'time' => $sessionReq->preferred_time ?? '09:00:00',
             'type' => $sessionReq->type,
             'status' => 'assigned'
         ]);
 
         return redirect()->back()->with('success', 'Counselor assigned effectively.');
+    }
+
+    public function approveWalkIn($id)
+    {
+        $sessionReq = SessionRequest::where('is_walk_in', true)->findOrFail($id);
+
+        $sessionReq->update(['status' => 'assigned']);
+
+        CounselingSession::create([
+            'student_id' => $sessionReq->student_id,
+            'counselor_id' => $sessionReq->counselor_id,
+            'date' => $sessionReq->preferred_date,
+            'time' => $sessionReq->preferred_time,
+            'type' => $sessionReq->type,
+            'status' => 'assigned'
+        ]);
+
+        $startTime = \Carbon\Carbon::parse($sessionReq->preferred_time)->format('H:i');
+        \App\Models\BlockedTime::where('counselor_id', $sessionReq->counselor_id)
+            ->where('date', $sessionReq->preferred_date)
+            ->where('start_time', 'like', $startTime.'%')
+            ->where('reason', 'Walk-in Pending Approval')
+            ->delete();
+
+        return redirect()->back()->with('success', 'Walk-in session approved and finalized.');
+    }
+
+    public function storeBlockedTime(Request $request)
+    {
+        $request->validate([
+            'counselor_id' => 'nullable|exists:counselors,id',
+            'date' => 'required|date',
+            'start_time' => 'required|date_format:H:i',
+            'end_time' => 'required|date_format:H:i|after:start_time',
+            'reason' => 'nullable|string'
+        ]);
+
+        \App\Models\BlockedTime::create($request->only('counselor_id', 'date', 'start_time', 'end_time', 'reason'));
+
+        return redirect()->back()->with('success', 'Time blocked successfully.');
+    }
+
+    public function deleteBlockedTime($id)
+    {
+        \App\Models\BlockedTime::findOrFail($id)->delete();
+        return redirect()->back()->with('success', 'Blocked time removed.');
+    }
+
+    public function generateReport()
+    {
+        $sessions = CounselingSession::with(['student', 'counselor'])->orderBy('date', 'desc')->orderBy('time', 'desc')->get();
+        $generatedBy = \Illuminate\Support\Facades\Auth::guard('admin')->user()->name;
+
+        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('reports.sessions_pdf', [
+            'sessions' => $sessions,
+            'generatedBy' => $generatedBy,
+            'reportType' => 'Comprehensive'
+        ]);
+
+        return $pdf->download('admin_sessions_report.pdf');
     }
 }

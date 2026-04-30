@@ -21,7 +21,7 @@
     </div>
 
     <!-- Quick Stats -->
-    <div class="grid grid-cols-3 gap-4">
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <div class="bg-white rounded-xl border border-gray-100 shadow-sm cursor-pointer hover:border-[#f48545]/50 hover:bg-[#fff9f6] hover:shadow-md hover:-translate-y-0.5 transition-all duration-200">
             <div class="p-4 text-center">
                 <div class="w-12 h-12 bg-[#fef4ee] border border-[#f48545]/20 rounded-full flex items-center justify-center mx-auto">
@@ -57,7 +57,7 @@
             <h3 class="text-base font-semibold leading-none tracking-tight">Quick Actions</h3>
         </div>
         <div class="p-6">
-            <div class="grid grid-cols-2 gap-3">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <a href="/student/request" class="inline-flex flex-col items-center justify-center rounded-md text-sm font-medium border border-gray-300 bg-white hover:bg-gray-100 h-auto py-4">
                     <i data-lucide="send" class="w-5 h-5 mb-2"></i>
                     <span>Request Session</span>

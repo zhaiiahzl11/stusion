@@ -23,6 +23,10 @@ Route::prefix('admin')->name('admin.')->group(function() {
     Route::post('/schedule/assign', [AdminController::class, 'assignCounselor'])->name('schedule.assign');
     Route::post('/schedule/availability/{id}/approve', [AdminController::class, 'approveAvailability'])->name('schedule.approve');
     Route::post('/schedule/availability/{id}/reject', [AdminController::class, 'rejectAvailability'])->name('schedule.reject');
+    Route::post('/schedule/walkin/{id}/approve', [AdminController::class, 'approveWalkIn'])->name('schedule.walkin.approve');
+    Route::post('/schedule/blocked-time', [AdminController::class, 'storeBlockedTime'])->name('schedule.block.store');
+    Route::delete('/schedule/blocked-time/{id}', [AdminController::class, 'deleteBlockedTime'])->name('schedule.block.destroy');
+    Route::get('/reports/sessions', [AdminController::class, 'generateReport'])->name('reports.sessions');
 });
 
 Route::prefix('counselor')->name('counselor.')->group(function() {
@@ -31,6 +35,9 @@ Route::prefix('counselor')->name('counselor.')->group(function() {
     Route::post('/sessions/{id}/complete', [CounselorController::class, 'completeSession'])->name('sessions.complete');
     Route::get('/availability', [CounselorController::class, 'availability'])->name('availability');
     Route::post('/availability', [CounselorController::class, 'storeAvailability'])->name('availability.store');
+    Route::get('/walk-in', [CounselorController::class, 'walkIn'])->name('walkin');
+    Route::post('/walk-in', [CounselorController::class, 'storeWalkIn'])->name('walkin.store');
+    Route::get('/reports/sessions', [CounselorController::class, 'generateReport'])->name('reports.sessions');
 });
 
 Route::prefix('student')->name('student.')->group(function() {

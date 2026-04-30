@@ -25,6 +25,15 @@
       <form method="POST" action="/login" class="space-y-4 w-full pl-2">
         @csrf
         
+        @if ($errors->any())
+        <div class="p-3 mb-4 text-xs font-semibold text-red-800 rounded-xl bg-red-50 border border-red-200" role="alert">
+            <div class="flex items-center gap-2">
+                <i data-lucide="alert-circle" class="w-4 h-4 text-red-500"></i>
+                <span>{{ $errors->first() }}</span>
+            </div>
+        </div>
+        @endif
+        
         <!-- Username Input -->
         <div class="relative">
           <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">

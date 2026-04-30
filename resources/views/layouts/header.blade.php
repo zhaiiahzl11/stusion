@@ -1,9 +1,14 @@
-<header class="bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between">
-    <div>
-        <h1 class="text-xl font-bold text-gray-900">{{ $title ?? 'Dashboard' }}</h1>
-        @if(isset($subtitle))
-            <p class="text-sm text-gray-500">{{ $subtitle }}</p>
-        @endif
+<header class="bg-white border-b border-gray-200 px-4 md:px-6 py-4 flex items-center justify-between sticky top-0 z-30">
+    <div class="flex items-center gap-3">
+        <button onclick="toggleSidebar()" class="md:hidden p-2 -ml-2 rounded-lg hover:bg-gray-100 text-gray-500 transition-colors">
+            <i data-lucide="menu" class="w-6 h-6"></i>
+        </button>
+        <div>
+            <h1 class="text-lg md:text-xl font-bold text-gray-900 truncate">{{ $title ?? 'Dashboard' }}</h1>
+            @if(isset($subtitle))
+                <p class="hidden sm:block text-sm text-gray-500">{{ $subtitle }}</p>
+            @endif
+        </div>
     </div>
     <div class="flex items-center gap-3 relative" id="notification-container">
         <button onclick="toggleNotifications()" class="relative p-2 rounded-lg hover:bg-gray-100 transition-colors focus:bg-gray-100 focus:outline-none">

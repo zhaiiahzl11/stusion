@@ -1,36 +1,33 @@
-@extends('layouts.dashboard', ['role' => 'student', 'activeModule' => 'request', 'title' => 'Request Session', 'subtitle' => 'Submit a new counseling request'])
+@extends('layouts.dashboard', ['role' => 'counselor', 'activeModule' => 'walkin', 'title' => 'Walk-in Intake', 'subtitle' => 'Manually create a session for a walk-in student'])
 
 @section('dashboard_content')
 <div class="p-6 space-y-6">
-    <!-- Include Flatpickr CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <style>
         .flatpickr-day.blocked-date {
-            background-color: #fee2e2 !important; /* bg-red-100 */
-            color: #ef4444 !important; /* text-red-500 */
+            background-color: #fee2e2 !important;
+            color: #ef4444 !important;
             font-weight: bold;
-            border-color: #fca5a5 !important; /* border-red-300 */
+            border-color: #fca5a5 !important;
         }
     </style>
 
-    <!-- Info Banner -->
     <div class="flex items-start gap-3 p-4 bg-[#fff1eb] border border-[#fef4ee] shadow-sm rounded-xl">
-        <i data-lucide="alert-circle" class="w-5 h-5 text-[#f48545] mt-0.5"></i>
+        <i data-lucide="info" class="w-5 h-5 text-[#f48545] mt-0.5"></i>
         <div>
-            <p class="font-bold text-[#d9733a]">How it works</p>
+            <p class="font-bold text-[#d9733a]">Walk-in Process</p>
             <p class="text-sm text-[#f48545] mt-1">
-                Submit your counseling request below. An admin will review it and assign a suitable counselor based on availability.
-                You will be notified once your session is scheduled.
+                Enter the student's details below. If the email is new, a temporary account will be automatically created.
+                The selected time slot will be instantly blocked, but the session must be approved by an Admin.
             </p>
         </div>
     </div>
 
-    <!-- Request Form -->
     <div class="bg-white rounded-xl border border-gray-200 shadow-sm">
         <div class="px-6 py-4 border-b border-gray-200">
-            <h3 class="text-base font-semibold leading-none tracking-tight">Submit Counseling Request</h3>
+            <h3 class="text-base font-semibold leading-none tracking-tight">Student Details & Scheduling</h3>
         </div>
-        <form method="POST" action="/student/request" class="p-6 space-y-4">
+        <form method="POST" action="/counselor/walk-in" class="p-6 space-y-4">
             @csrf
             
             @if(session('success'))
@@ -49,14 +46,15 @@
             </div>
             @endif
 
-            <div>
-                <label class="text-sm font-bold text-gray-900">Select Counselor</label>
-                <select name="counselor_id" id="counselor_select" class="mt-2 w-full h-10 bg-gray-50 border border-gray-200 rounded-lg px-3 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#f48545]/50 transition-shadow" required>
-                    <option value="" disabled selected>Select a counselor</option>
-                    @foreach($counselors as $counselor)
-                        <option value="{{ $counselor->id }}">{{ $counselor->name }}</option>
-                    @endforeach
-                </select>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label class="text-sm font-bold text-gray-900">Student Name</label>
+                    <input type="text" name="student_name" class="mt-2 w-full h-10 bg-gray-50 border border-gray-200 rounded-lg px-3 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#f48545]/50 transition-shadow" placeholder="e.g. John Doe" required>
+                </div>
+                <div>
+                    <label class="text-sm font-bold text-gray-900">Student Email</label>
+                    <input type="email" name="student_email" class="mt-2 w-full h-10 bg-gray-50 border border-gray-200 rounded-lg px-3 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#f48545]/50 transition-shadow" placeholder="student@example.com" required>
+                </div>
             </div>
             
             <div class="mt-5">
@@ -72,35 +70,26 @@
             
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-5">
                 <div>
-                    <label class="text-sm font-bold text-gray-900">Preferred Date</label>
+                    <label class="text-sm font-bold text-gray-900">Date</label>
                     <input type="text" name="preferred_date" id="date_input" placeholder="Select Date" class="mt-2 w-full h-10 bg-white border border-gray-200 rounded-lg px-3 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#f48545]/50 transition-shadow cursor-pointer" required>
                 </div>
                 <div>
-                    <label class="text-sm font-bold text-gray-900">Preferred Time</label>
+                    <label class="text-sm font-bold text-gray-900">Time</label>
                     <input type="hidden" name="preferred_time" id="time_input" required>
                     <div id="time_grid" class="mt-2 grid grid-cols-3 sm:grid-cols-4 gap-2">
-                        <div class="col-span-full text-sm text-gray-500 italic py-2">Select Date & Counselor First</div>
+                        <div class="col-span-full text-sm text-gray-500 italic py-2">Select Date First</div>
                     </div>
                 </div>
             </div>
-            
-            <div class="mt-5">
-                <label class="text-sm font-bold text-gray-900">Urgency</label>
-                <select name="urgency" class="mt-2 w-full h-10 bg-gray-50 border border-gray-200 rounded-lg px-3 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#f48545]/50 transition-shadow" required>
-                    <option value="Low">Low</option>
-                    <option value="Medium" selected>Medium</option>
-                    <option value="High">High</option>
-                </select>
-            </div>
 
             <div class="mt-5">
-                <label class="text-sm font-bold text-gray-900">Description</label>
-                <textarea name="description" class="mt-2 w-full h-24 bg-gray-50 border border-gray-200 rounded-lg p-3 text-sm text-gray-900 placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-[#f48545]/50 transition-shadow" placeholder="Briefly describe what you'd like to discuss..." required></textarea>
+                <label class="text-sm font-bold text-gray-900">Notes / Description</label>
+                <textarea name="description" class="mt-2 w-full h-24 bg-gray-50 border border-gray-200 rounded-lg p-3 text-sm text-gray-900 placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-[#f48545]/50 transition-shadow" placeholder="Initial observation or reason for walk-in..." required></textarea>
             </div>
             
             <div class="pt-6 flex justify-end">
                 <button type="submit" class="inline-flex items-center justify-center rounded-md text-sm font-medium bg-[#f48545] text-white hover:bg-[#e67a3b] hover:shadow-md transition-all h-10 px-6 py-2">
-                    Submit Request
+                    Submit for Approval
                 </button>
             </div>
         </form>
@@ -109,10 +98,8 @@
 
 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 <script>
-    const counselors = @json($counselors);
+    const counselor = @json($counselor);
     const globalBlockedTimes = @json($globalBlockedTimes);
-
-    const counselorSelect = document.getElementById('counselor_select');
 
     function isGlobalBlocked(dateStr) {
         return globalBlockedTimes.some(block => block.date === dateStr);
@@ -132,24 +119,16 @@
             if (!date) return;
             const dateStr = formatDate(date);
             
-            // Mark weekends and global blocked dates in red
             if (date.getDay() === 0 || date.getDay() === 6 || isGlobalBlocked(dateStr)) {
                 dayElem.classList.add("blocked-date");
                 return;
             }
 
-            // Mark counselor specific blocks (full day)
-            const counselorId = parseInt(counselorSelect.value);
-            if (counselorId) {
-                const counselor = counselors.find(c => c.id === counselorId);
-                if (counselor) {
-                    const hasFullBlock = counselor.blocked_times.some(block => {
-                        return block.date === dateStr && block.start_time <= '09:00:00' && block.end_time >= '17:00:00';
-                    });
-                    if (hasFullBlock) {
-                        dayElem.classList.add("blocked-date");
-                    }
-                }
+            const hasFullBlock = counselor.blocked_times.some(block => {
+                return block.date === dateStr && block.start_time <= '09:00:00' && block.end_time >= '17:00:00';
+            });
+            if (hasFullBlock) {
+                dayElem.classList.add("blocked-date");
             }
         },
         onChange: function(selectedDates, dateStr, instance) {
@@ -159,30 +138,24 @@
             const day = dateObj.getDay();
 
             if (day === 0 || day === 6) {
-                alert('Saturdays and Sundays are not available. Please select another date.');
+                alert('Saturdays and Sundays are not available.');
                 instance.clear();
                 return;
             }
 
             if (isGlobalBlocked(dateVal)) {
-                alert('This date is currently blocked and unavailable. Please select another date.');
+                alert('This date is globally blocked.');
                 instance.clear();
                 return;
             }
 
-            const counselorId = parseInt(counselorSelect.value);
-            if (counselorId) {
-                const counselor = counselors.find(c => c.id === counselorId);
-                if (counselor) {
-                    const hasFullBlock = counselor.blocked_times.some(block => {
-                        return block.date === dateVal && block.start_time <= '09:00:00' && block.end_time >= '17:00:00';
-                    });
-                    if (hasFullBlock) {
-                        alert('The selected counselor is unavailable for this entire date.');
-                        instance.clear();
-                        return;
-                    }
-                }
+            const hasFullBlock = counselor.blocked_times.some(block => {
+                return block.date === dateVal && block.start_time <= '09:00:00' && block.end_time >= '17:00:00';
+            });
+            if (hasFullBlock) {
+                alert('You are fully unavailable on this date.');
+                instance.clear();
+                return;
             }
             
             renderTimeOptions();
@@ -200,24 +173,19 @@
 
     function renderTimeOptions() {
         const dateVal = document.getElementById('date_input').value;
-        const counselorId = parseInt(counselorSelect.value);
 
         timeGrid.innerHTML = '';
-        timeInput.value = ''; // Reset selection
+        timeInput.value = '';
 
-        if (!dateVal || !counselorId) {
-            timeGrid.innerHTML = '<div class="col-span-full text-sm text-gray-500 italic py-2">Select Date & Counselor First</div>';
+        if (!dateVal) {
+            timeGrid.innerHTML = '<div class="col-span-full text-sm text-gray-500 italic py-2">Select Date First</div>';
             return;
         }
-
-        const counselor = counselors.find(c => c.id === counselorId);
-        if (!counselor) return;
 
         const startHour = 8;
         const endHour = 17;
 
         for (let h = startHour; h <= endHour; h++) {
-            // Hourly format only
             ['00'].forEach(m => {
                 const hourStr = String(h).padStart(2, '0');
                 const timeVal = `${hourStr}:${m}`;
@@ -225,7 +193,6 @@
                 
                 let isBlocked = false;
 
-                // Check Booked Sessions
                 const isBooked = counselor.counseling_sessions.some(session => 
                     session.date === dateVal && session.time.substring(0, 5) === timeVal
                 );
@@ -234,7 +201,6 @@
                     isBlocked = true;
                 }
 
-                // Check Blocked Times (Unavailability Requests)
                 if (!isBlocked) {
                     const hasBlock = counselor.blocked_times.some(block => {
                         const sTime = block.start_time.substring(0, 5);
@@ -256,12 +222,10 @@
                 } else {
                     btn.className = 'time-slot-btn w-full h-10 rounded-lg text-sm font-medium bg-white text-gray-700 border border-gray-200 hover:border-[#f48545] hover:text-[#f48545] transition-colors';
                     btn.onclick = () => {
-                        // Deselect all
                         document.querySelectorAll('.time-slot-btn').forEach(b => {
                             b.classList.remove('bg-[#f48545]', 'text-white', 'border-[#f48545]');
                             b.classList.add('bg-white', 'text-gray-700', 'border-gray-200');
                         });
-                        // Select this
                         btn.classList.remove('bg-white', 'text-gray-700', 'border-gray-200');
                         btn.classList.add('bg-[#f48545]', 'text-white', 'border-[#f48545]');
                         timeInput.value = timeVal;
@@ -272,12 +236,5 @@
             });
         }
     }
-
-    counselorSelect.addEventListener('change', () => {
-        // Redraw dates to show counselor specific full-day blocks
-        datePicker.redraw();
-        renderTimeOptions();
-    });
-
 </script>
 @endsection

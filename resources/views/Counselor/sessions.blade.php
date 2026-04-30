@@ -2,11 +2,17 @@
 
 @section('dashboard_content')
 <div class="p-6 space-y-4">
-    <!-- Filter Tabs -->
-    <div class="flex items-center gap-2 mb-6">
-        <a href="/counselor/sessions?filter=all" class="px-4 py-2 rounded-lg text-sm font-medium transition-colors {{ ($filter ?? 'all') == 'all' ? 'bg-[#f48545] text-white shadow-sm' : 'bg-gray-100 text-gray-500 hover:bg-gray-200' }}">All</a>
-        <a href="/counselor/sessions?filter=upcoming" class="px-4 py-2 rounded-lg text-sm font-medium transition-colors {{ ($filter ?? 'all') == 'upcoming' ? 'bg-[#f48545] text-white shadow-sm' : 'bg-gray-100 text-gray-500 hover:bg-gray-200' }}">Upcoming</a>
-        <a href="/counselor/sessions?filter=completed" class="px-4 py-2 rounded-lg text-sm font-medium transition-colors {{ ($filter ?? 'all') == 'completed' ? 'bg-[#f48545] text-white shadow-sm' : 'bg-gray-100 text-gray-500 hover:bg-gray-200' }}">Completed</a>
+    <!-- Filter Tabs & Actions -->
+    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
+        <div class="flex flex-wrap items-center gap-2">
+            <a href="/counselor/sessions?filter=all" class="px-4 py-2 rounded-lg text-sm font-medium transition-colors {{ ($filter ?? 'all') == 'all' ? 'bg-[#f48545] text-white shadow-sm' : 'bg-gray-100 text-gray-500 hover:bg-gray-200' }}">All</a>
+            <a href="/counselor/sessions?filter=upcoming" class="px-4 py-2 rounded-lg text-sm font-medium transition-colors {{ ($filter ?? 'all') == 'upcoming' ? 'bg-[#f48545] text-white shadow-sm' : 'bg-gray-100 text-gray-500 hover:bg-gray-200' }}">Upcoming</a>
+            <a href="/counselor/sessions?filter=completed" class="px-4 py-2 rounded-lg text-sm font-medium transition-colors {{ ($filter ?? 'all') == 'completed' ? 'bg-[#f48545] text-white shadow-sm' : 'bg-gray-100 text-gray-500 hover:bg-gray-200' }}">Completed</a>
+        </div>
+        
+        <a href="/counselor/reports/sessions" class="inline-flex items-center justify-center rounded-md text-sm font-medium bg-[#f48545] text-white hover:bg-[#e67a3b] shadow-sm h-10 px-4 transition-colors">
+            <i data-lucide="download" class="w-4 h-4 mr-2"></i> Download My Report
+        </a>
     </div>
 
     <!-- Sessions List -->
@@ -14,7 +20,7 @@
         @forelse($sessions as $session)
         <div class="bg-white rounded-xl border border-gray-100 shadow-sm hover:border-[#f48545]/30 hover:shadow-md transition-all">
             <div class="p-4">
-                <div class="flex items-center justify-between">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                     <div class="flex items-center gap-4">
                         <div class="w-12 h-12 {{ $session->status == 'Completed' ? 'bg-gray-50 shadow-sm shadow-gray-100' : 'bg-[#fef4ee] shadow-sm shadow-[#f48545]/10' }} rounded-full flex items-center justify-center">
                             <i data-lucide="graduation-cap" class="w-6 h-6 {{ $session->status == 'Completed' ? 'text-gray-400' : 'text-[#f48545]' }}"></i>
@@ -25,7 +31,7 @@
                             <p class="text-xs font-medium text-gray-400 mt-1">{{ \Carbon\Carbon::parse($session->date)->format('M d, Y') }} at {{ \Carbon\Carbon::parse($session->time)->format('g:i A') }}</p>
                         </div>
                     </div>
-                    <div class="flex items-center gap-3">
+                    <div class="flex flex-wrap items-center gap-2 self-start sm:self-auto ml-16 sm:ml-0">
                         @if($session->status == 'Completed')
                             <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold border bg-gray-50 text-gray-500 border-gray-200">Completed</span>
                         @else
@@ -73,7 +79,7 @@
                 <p id="modal_student" class="text-base font-bold text-gray-900"></p>
             </div>
             
-            <div class="grid grid-cols-2 gap-4">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                     <p class="text-sm font-medium text-gray-500 mb-1">Session Type</p>
                     <p id="modal_type" class="text-sm font-semibold text-gray-900"></p>

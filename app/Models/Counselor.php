@@ -22,4 +22,14 @@ class Counselor extends Authenticatable
     {
         return $this->hasMany(CounselingSession::class);
     }
+
+    public function sessionRequests()
+    {
+        return $this->hasMany(SessionRequest::class);
+    }
+
+    public function blockedTimes()
+    {
+        return $this->hasMany(BlockedTime::class);
+    }
 }

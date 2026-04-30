@@ -3,17 +3,17 @@
 @section('dashboard_content')
 <div class="p-6 space-y-4">
     <!-- Header Actions -->
-    <div class="flex items-center justify-between">
-        <div class="flex items-center gap-2">
-            <input type="text" placeholder="Search users..." class="h-10 w-64 bg-white border border-gray-200 rounded-lg px-3 text-sm text-gray-900 placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-[#f48545]" />
-            <select onchange="window.location.href='?role='+this.value" class="h-10 w-32 bg-white border border-gray-200 rounded-lg px-3 text-sm text-gray-500 focus:outline-none focus:ring-2 focus:ring-[#f48545]">
+    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <div class="flex flex-col sm:flex-row items-start sm:items-center gap-2 w-full sm:w-auto">
+            <input type="text" placeholder="Search users..." class="h-10 w-full sm:w-64 bg-white border border-gray-200 rounded-lg px-3 text-sm text-gray-900 placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-[#f48545]" />
+            <select onchange="window.location.href='?role='+this.value" class="h-10 w-full sm:w-32 bg-white border border-gray-200 rounded-lg px-3 text-sm text-gray-500 focus:outline-none focus:ring-2 focus:ring-[#f48545]">
                 <option value="All" {{ ($filter ?? 'All') == 'All' ? 'selected' : '' }}>All Roles</option>
                 <option value="Student" {{ ($filter ?? '') == 'Student' ? 'selected' : '' }}>Student</option>
                 <option value="Counselor" {{ ($filter ?? '') == 'Counselor' ? 'selected' : '' }}>Counselor</option>
                 <option value="Admin" {{ ($filter ?? '') == 'Admin' ? 'selected' : '' }}>Admin</option>
             </select>
         </div>
-        <button onclick="toggleModal('addUserModal')" class="inline-flex items-center justify-center rounded-md text-sm font-medium bg-[#f48545] text-white hover:bg-[#e67a3b] h-10 px-4 py-2 transition-colors shadow-sm">
+        <button onclick="toggleModal('addUserModal')" class="inline-flex w-full sm:w-auto items-center justify-center rounded-md text-sm font-medium bg-[#f48545] text-white hover:bg-[#e67a3b] h-10 px-4 py-2 transition-colors shadow-sm">
             <i data-lucide="plus" class="w-4 h-4 mr-1"></i> Add User
         </button>
     </div>
@@ -35,8 +35,8 @@
     @endif
 
     <!-- Users Table -->
-    <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
-        <table class="w-full text-left border-collapse">
+    <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-x-auto">
+        <table class="w-full text-left border-collapse min-w-[600px]">
             <thead>
                 <tr class="border-b border-gray-200 bg-gray-50">
                     <th class="p-4 text-sm font-medium text-gray-500">Name</th>

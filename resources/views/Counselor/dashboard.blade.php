@@ -3,23 +3,23 @@
 @section('dashboard_content')
 <div class="p-6 space-y-6">
     <!-- Stats -->
-    <div class="grid grid-cols-3 gap-4">
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <a href="/counselor/sessions" class="block bg-white rounded-xl border border-gray-100 shadow-sm cursor-pointer hover:border-[#f48545]/50 hover:bg-[#fff9f6] hover:shadow-md hover:-translate-y-0.5 transition-all duration-200">
             <div class="p-4">
                 <p class="text-sm font-medium text-gray-500">Today's Sessions</p>
-                <p class="text-2xl font-bold text-gray-900 mt-2">{{ $todaysSessions > 0 ? $todaysSessions : '0' }}</p>
+                <p class="text-2xl font-bold text-gray-900 mt-2 text-right">{{ $todaysSessions > 0 ? $todaysSessions : '0' }}</p>
             </div>
         </a>
         <a href="/counselor/sessions" class="block bg-white rounded-xl border border-gray-100 shadow-sm cursor-pointer hover:border-[#f48545]/50 hover:bg-[#fff9f6] hover:shadow-md hover:-translate-y-0.5 transition-all duration-200">
             <div class="p-4">
                 <p class="text-sm font-medium text-gray-500">This Week</p>
-                <p class="text-2xl font-bold text-gray-900 mt-2">{{ $thisWeek > 0 ? $thisWeek : '0' }}</p>
+                <p class="text-2xl font-bold text-gray-900 mt-2 text-right">{{ $thisWeek > 0 ? $thisWeek : '0' }}</p>
             </div>
         </a>
         <a href="/counselor/sessions" class="block bg-white rounded-xl border border-gray-100 shadow-sm cursor-pointer hover:border-[#f48545]/50 hover:bg-[#fff9f6] hover:shadow-md hover:-translate-y-0.5 transition-all duration-200">
             <div class="p-4">
                 <p class="text-sm font-medium text-gray-500">Completed</p>
-                <p class="text-2xl font-bold text-gray-900 mt-2">{{ $completed > 0 ? $completed : '0' }}</p>
+                <p class="text-2xl font-bold text-gray-900 mt-2 text-right">{{ $completed > 0 ? $completed : '0' }}</p>
             </div>
         </a>
     </div>
@@ -33,9 +33,9 @@
         <div class="p-6">
             <div class="space-y-3">
                 @forelse($upcomingSessions as $session)
-                <div class="flex items-center justify-between p-4 border border-gray-100 rounded-xl hover:border-[#f48545]/30 hover:bg-[#fff9f6] transition-all shadow-sm shadow-gray-100/50">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between p-4 border border-gray-100 rounded-xl hover:border-[#f48545]/30 hover:bg-[#fff9f6] transition-all shadow-sm shadow-gray-100/50 gap-4">
                     <div class="flex items-center gap-4">
-                        <div class="w-12 h-12 bg-[#fef4ee] rounded-lg flex flex-col items-center justify-center border border-[#f48545]/10 shadow-sm">
+                        <div class="w-12 h-12 bg-[#fef4ee] rounded-lg flex flex-col items-center justify-center border border-[#f48545]/10 shadow-sm shrink-0">
                             @if(\Carbon\Carbon::parse($session->date)->isToday())
                                 <span class="text-[10px] text-[#f48545] font-bold tracking-wider">TODAY</span>
                             @else
@@ -43,12 +43,12 @@
                             @endif
                             <span class="text-xs text-[#d9733a] font-medium">{{ \Carbon\Carbon::parse($session->time)->format('g:i') }}</span>
                         </div>
-                        <div>
-                            <p class="font-medium text-gray-900">{{ $session->student->name ?? 'Unknown Student' }}</p>
-                            <p class="text-sm text-gray-500">{{ $session->type }} - {{ \Carbon\Carbon::parse($session->time)->format('g:i A') }}</p>
+                        <div class="min-w-0">
+                            <p class="font-medium text-gray-900 truncate">{{ $session->student->name ?? 'Unknown Student' }}</p>
+                            <p class="text-sm text-gray-500 truncate">{{ $session->type }} - {{ \Carbon\Carbon::parse($session->time)->format('g:i A') }}</p>
                         </div>
                     </div>
-                    <button onclick="openDetailsModal('{{ addslashes($session->student->name ?? 'Unknown Student') }}', '{{ addslashes($session->type) }}', '{{ \Carbon\Carbon::parse($session->date)->format('M d, Y') }} at {{ \Carbon\Carbon::parse($session->time)->format('g:i A') }}', '{{ $session->status }}')" class="inline-flex items-center justify-center rounded-md text-sm font-medium border border-gray-200 bg-white hover:bg-gray-50 h-8 px-4 shadow-sm transition-colors">View Details</button>
+                    <button onclick="openDetailsModal('{{ addslashes($session->student->name ?? 'Unknown Student') }}', '{{ addslashes($session->type) }}', '{{ \Carbon\Carbon::parse($session->date)->format('M d, Y') }} at {{ \Carbon\Carbon::parse($session->time)->format('g:i A') }}', '{{ $session->status }}')" class="self-start sm:self-auto ml-16 sm:ml-0 inline-flex items-center justify-center rounded-md text-sm font-medium border border-gray-200 bg-white hover:bg-gray-50 h-8 px-4 shadow-sm transition-colors">View Details</button>
                 </div>
                 @empty
                 <div class="text-center py-4 text-gray-500 text-sm">

@@ -40,21 +40,37 @@ class StudentController extends Controller
 
     public function requestSession()
     {
-        return view('student.request');
+        $counselors = \App\Models\Counselor::with(['counselingSessions' => function($q) {
+            $q->where('status', 'assigned')->where('date', '>=', today());
+        }, 'blockedTimes' => function($q) {
+            $q->where('date', '>=', today());
+        }])->get();
+
+        $globalBlockedTimes = \App\Models\BlockedTime::whereNull('counselor_id')
+                                ->where('date', '>=', today())
+                                ->get();
+
+        return view('student.request', compact('counselors', 'globalBlockedTimes'));
     }
 
     public function storeRequest(Request $request)
     {
         $request->validate([
+            'counselor_id' => 'required|exists:counselors,id',
             'type' => 'required|string',
             'urgency' => 'required|string|in:Low,Medium,High',
-            'preferred_date' => 'nullable|date',
-            'preferred_time' => 'nullable|date_format:H:i',
+            'preferred_date' => 'required|date',
+            'preferred_time' => 'required|date_format:H:i',
             'description' => 'required|string',
         ]);
 
+        if (\Carbon\Carbon::parse($request->preferred_date)->isWeekend()) {
+            return redirect()->back()->withErrors(['preferred_date' => 'Saturdays and Sundays are not available.'])->withInput();
+        }
+
         SessionRequest::create([
             'student_id' => Auth::guard('student')->id(),
+            'counselor_id' => $request->counselor_id,
             'type' => $request->type,
             'urgency' => $request->urgency,
             'preferred_date' => $request->preferred_date,

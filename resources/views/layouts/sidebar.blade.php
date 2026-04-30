@@ -8,7 +8,8 @@
     $counselorModules = [
         ['url' => '/counselor/dashboard', 'id' => 'dashboard', 'label' => 'Dashboard', 'icon' => 'layout-dashboard'],
         ['url' => '/counselor/sessions', 'id' => 'sessions', 'label' => 'My Sessions', 'icon' => 'clipboard-list'],
-        ['url' => '/counselor/availability', 'id' => 'availability', 'label' => 'Availability Request', 'icon' => 'clock'],
+        ['url' => '/counselor/availability', 'id' => 'availability', 'label' => 'Leave Request', 'icon' => 'clock'],
+        ['url' => '/counselor/walk-in', 'id' => 'walkin', 'label' => 'Walk-in Intake', 'icon' => 'user-plus'],
     ];
 
     $studentModules = [
@@ -21,8 +22,9 @@
     $roleLabel = ucfirst($role);
     $roleIcon = $role === 'admin' ? 'shield' : ($role === 'counselor' ? 'user' : 'graduation-cap');
     
-    $name = $role === 'admin' ? 'John Admin' : ($role === 'counselor' ? 'Dr. Sarah' : 'Alex Student');
-    $email = $role === 'admin' ? 'admin@school.edu' : ($role === 'counselor' ? 'sarah@school.edu' : 'alex@school.edu');
+    $user = Auth::guard($role)->user();
+    $name = $user ? $user->name : 'Unknown User';
+    $email = $user ? $user->email : 'unknown@stusion.com';
 @endphp
 
 <div class="w-64 bg-[#5e3020] text-white flex flex-col h-full shrink-0">
