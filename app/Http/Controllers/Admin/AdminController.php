@@ -26,7 +26,7 @@ class AdminController extends Controller
         $recentRequests = SessionRequest::with('student')->where('status', 'pending')->latest()->take(5)->get();
         $counselors = Counselor::all();
 
-        return view('admin.dashboard', compact('totalSessions', 'pendingRequestsCount', 'activeCounselorsCount', 'totalStudents', 'recentRequests', 'counselors'));
+        return view('Admin.dashboard', compact('totalSessions', 'pendingRequestsCount', 'activeCounselorsCount', 'totalStudents', 'recentRequests', 'counselors'));
     }
 
     public function users(Request $request)
