@@ -38,6 +38,12 @@
         </div>
         @endforeach
 
+        @if($pendingRequests->hasPages())
+        <div class="mt-4 mb-8">
+            {{ $pendingRequests->links() }}
+        </div>
+        @endif
+
         @forelse($sessions as $session)
         <div class="bg-white rounded-xl border border-gray-100 shadow-sm hover:border-[#f48545]/30 hover:shadow-md hover:bg-[#fff9f6] transition-all">
             <div class="p-4">
@@ -73,6 +79,12 @@
             @endif
         @endforelse
     </div>
+    
+    @if($sessions->hasPages())
+    <div class="mt-4">
+        {{ $sessions->links() }}
+    </div>
+    @endif
 </div>
 
 <!-- Details Modal Overlay -->

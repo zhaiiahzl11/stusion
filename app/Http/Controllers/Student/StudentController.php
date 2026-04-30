@@ -89,12 +89,12 @@ class StudentController extends Controller
             ->where('student_id', $studentId)
             ->orderBy('date', 'desc')
             ->orderBy('time', 'desc')
-            ->get();
+            ->paginate(10, ['*'], 'sessions_page')->withQueryString();
             
         $pendingRequests = SessionRequest::where('student_id', $studentId)
             ->where('status', 'pending')
             ->orderBy('created_at', 'desc')
-            ->get();
+            ->paginate(10, ['*'], 'requests_page')->withQueryString();
             
         return view('student.sessions', compact('sessions', 'pendingRequests'));
     }

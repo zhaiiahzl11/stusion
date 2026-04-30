@@ -67,6 +67,9 @@
                 </div>
                 @endforelse
             </div>
+            <div class="mt-4">
+                {{ $availabilityRequests->links() }}
+            </div>
         </div>
     </div>
 
@@ -151,6 +154,9 @@
                 </div>
                 @endforelse
             </div>
+            <div class="mt-4">
+                {{ $blockedTimes->links() }}
+            </div>
         </div>
     </div>
 
@@ -193,6 +199,9 @@
                     No pending session assignments across all students.
                 </div>
                 @endforelse
+            </div>
+            <div class="mt-4">
+                {{ $pendingSessionRequests->links() }}
             </div>
         </div>
     </div>

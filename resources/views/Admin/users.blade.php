@@ -89,6 +89,11 @@
             </tbody>
         </table>
     </div>
+
+    <!-- Pagination -->
+    <div class="mt-4">
+        {{ $users->appends(request()->query())->links() }}
+    </div>
 </div>
 
 <!-- Add User Modal Overlay -->

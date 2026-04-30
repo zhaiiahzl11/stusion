@@ -12,6 +12,7 @@ use App\Models\CounselingSession;
 use App\Models\Student;
 use App\Models\Admin;
 use App\Models\AvailabilityRequest;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 class AdminController extends Controller
 {
@@ -42,6 +43,18 @@ class AdminController extends Controller
         if ($filter == 'All' || $filter == 'Student') {
             foreach(Student::all() as $student) { $student->role = 'Student'; $users->push($student); }
         }
+
+        $perPage = 10;
+        $page = $request->input('page', 1);
+        $paginatedUsers = new LengthAwarePaginator(
+            $users->forPage($page, $perPage),
+            $users->count(),
+            $perPage,
+            $page,
+            ['path' => $request->url(), 'query' => $request->query()]
+        );
+
+        $users = $paginatedUsers;
 
         return view('admin.users', compact('users', 'filter'));
     }
@@ -114,10 +127,10 @@ class AdminController extends Controller
 
     public function schedule()
     {
-        $availabilityRequests = AvailabilityRequest::with('counselor')->where('status', 'pending')->latest()->get();
-        $pendingSessionRequests = SessionRequest::with('student', 'counselor')->where('status', 'pending')->latest()->get();
+        $availabilityRequests = AvailabilityRequest::with('counselor')->where('status', 'pending')->latest()->paginate(10, ['*'], 'availability_page')->withQueryString();
+        $pendingSessionRequests = SessionRequest::with('student', 'counselor')->where('status', 'pending')->latest()->paginate(10, ['*'], 'sessions_page')->withQueryString();
         $counselors = Counselor::all();
-        $blockedTimes = \App\Models\BlockedTime::with('counselor')->orderBy('date', 'desc')->get();
+        $blockedTimes = \App\Models\BlockedTime::with('counselor')->orderBy('date', 'desc')->paginate(10, ['*'], 'blocked_page')->withQueryString();
 
         return view('admin.schedule', compact('availabilityRequests', 'pendingSessionRequests', 'counselors', 'blockedTimes'));
     }

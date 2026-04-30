@@ -54,7 +54,7 @@ class CounselorController extends Controller
 
         $sessions = $query->orderBy('date', 'desc')
             ->orderBy('time', 'desc')
-            ->get();
+            ->paginate(10)->withQueryString();
             
         return view('counselor.sessions', compact('sessions', 'filter'));
     }
@@ -62,7 +62,7 @@ class CounselorController extends Controller
     public function availability()
     {
         $counselorId = Auth::guard('counselor')->id();
-        $requests = AvailabilityRequest::where('counselor_id', $counselorId)->latest()->get();
+        $requests = AvailabilityRequest::where('counselor_id', $counselorId)->latest()->paginate(10);
         return view('counselor.availability', compact('requests'));
     }
 
