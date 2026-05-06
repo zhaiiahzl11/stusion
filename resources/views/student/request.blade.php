@@ -19,8 +19,7 @@
         <div>
             <p class="font-bold text-[#d9733a]">How it works</p>
             <p class="text-sm text-[#f48545] mt-1">
-                Submit your counseling request below. An admin will review it and assign a suitable counselor based on availability.
-                You will be notified once your session is scheduled.
+                Select a counselor, date, and time. Your session will be automatically scheduled, provided the counselor is available. Please note that bookings must be made at least one day in advance.
             </p>
         </div>
     </div>
@@ -126,7 +125,7 @@
     }
 
     const datePicker = flatpickr("#date_input", {
-        minDate: "today",
+        minDate: new Date().fp_incr(1),
         onDayCreate: function(dObj, dStr, fp, dayElem) {
             const date = dayElem.dateObj;
             if (!date) return;

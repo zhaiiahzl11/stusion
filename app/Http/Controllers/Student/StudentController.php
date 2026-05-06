@@ -68,7 +68,11 @@ class StudentController extends Controller
             return redirect()->back()->withErrors(['preferred_date' => 'Saturdays and Sundays are not available.'])->withInput();
         }
 
-        SessionRequest::create([
+        if (\Carbon\Carbon::parse($request->preferred_date)->startOfDay()->lte(today())) {
+            return redirect()->back()->withErrors(['preferred_date' => 'Bookings must be made at least one day in advance.'])->withInput();
+        }
+
+        $sessionReq = SessionRequest::create([
             'student_id' => Auth::guard('student')->id(),
             'counselor_id' => $request->counselor_id,
             'type' => $request->type,
@@ -76,10 +80,19 @@ class StudentController extends Controller
             'preferred_date' => $request->preferred_date,
             'preferred_time' => $request->preferred_time,
             'description' => $request->description,
-            'status' => 'pending'
+            'status' => 'assigned'
         ]);
 
-        return redirect()->route('student.dashboard')->with('success', 'Session request submitted successfully!');
+        CounselingSession::create([
+            'student_id' => $sessionReq->student_id,
+            'counselor_id' => $sessionReq->counselor_id,
+            'date' => $sessionReq->preferred_date,
+            'time' => $sessionReq->preferred_time,
+            'type' => $sessionReq->type,
+            'status' => 'assigned'
+        ]);
+
+        return redirect()->route('student.dashboard')->with('success', 'Session scheduled successfully!');
     }
 
     public function sessions()
