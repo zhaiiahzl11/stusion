@@ -12,9 +12,8 @@
         </style>
         <script src="https://unpkg.com/lucide@latest"></script>
 
-        <!-- Tailwind Vite (If exists) or CDN -->
+        <!-- Tailwind Vite -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
-        <script src="https://cdn.tailwindcss.com"></script>
         
         <style>
             :root {
