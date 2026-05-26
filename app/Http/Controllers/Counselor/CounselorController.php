@@ -129,7 +129,19 @@ class CounselorController extends Controller
         $isNew = false;
         
         if (!$student) {
+            $baseUsername = strtolower(preg_replace('/[^A-Za-z0-9]/', '', $request->student_name));
+            if (empty($baseUsername)) {
+                $baseUsername = 'student' . time();
+            }
+            $username = $baseUsername;
+            $counter = 1;
+            while (\App\Models\Student::where('username', $username)->exists()) {
+                $username = $baseUsername . $counter;
+                $counter++;
+            }
+
             $student = \App\Models\Student::create([
+                'username' => $username,
                 'email' => $request->student_email,
                 'name' => $request->student_name,
                 'password' => \Illuminate\Support\Facades\Hash::make('password123'),
@@ -165,7 +177,7 @@ class CounselorController extends Controller
 
         $msg = 'Walk-in session submitted for admin approval.';
         if ($isNew) {
-            $msg .= ' A new student account was created. Username: ' . $student->name . ' | Password: password123';
+            $msg .= ' A new student account was created. Username: ' . $student->username . ' | Password: password123';
         }
 
         return redirect()->back()->with('success', $msg);

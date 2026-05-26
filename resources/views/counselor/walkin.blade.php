@@ -27,7 +27,7 @@
         <div class="px-6 py-4 border-b border-gray-200">
             <h3 class="text-base font-semibold leading-none tracking-tight">Student Details & Scheduling</h3>
         </div>
-        <form method="POST" action="/counselor/walk-in" class="p-6 space-y-4">
+        <form method="POST" action="/counselor/walk-in" class="p-6 space-y-4" onsubmit="document.getElementById('submitBtn').disabled = true; document.getElementById('submitBtn').innerText = 'Submitting...';">
             @csrf
             
             @if(session('success'))
@@ -88,7 +88,7 @@
             </div>
             
             <div class="pt-6 flex justify-end">
-                <button type="submit" class="inline-flex items-center justify-center rounded-md text-sm font-medium bg-[#f48545] text-white hover:bg-[#e67a3b] hover:shadow-md transition-all h-10 px-6 py-2">
+                <button type="submit" id="submitBtn" class="inline-flex items-center justify-center rounded-md text-sm font-medium bg-[#f48545] text-white hover:bg-[#e67a3b] hover:shadow-md transition-all h-10 px-6 py-2 disabled:opacity-70 disabled:cursor-not-allowed">
                     Submit for Approval
                 </button>
             </div>

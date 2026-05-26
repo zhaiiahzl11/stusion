@@ -62,7 +62,8 @@ class AdminController extends Controller
     public function storeUser(Request $request)
     {
         $request->validate([
-            'name' => 'required|string',
+            'name' => 'required|string|max:255',
+            'username' => 'required|string|alpha_dash|max:255|unique:admins,username|unique:counselors,username|unique:students,username',
             'email' => 'required|email|unique:admins,email|unique:counselors,email|unique:students,email',
             'role' => 'required|in:Admin,Counselor,Student'
         ]);
@@ -70,6 +71,7 @@ class AdminController extends Controller
         $password = Hash::make('password123');
         $data = [
             'name' => $request->name,
+            'username' => $request->username,
             'email' => $request->email,
             'password' => $password
         ];
@@ -100,13 +102,19 @@ class AdminController extends Controller
     public function updateUser(Request $request, $role, $id)
     {
         $request->validate([
-            'name' => 'required|string',
-            'email' => 'required|email',
+            'name' => 'required|string|max:255',
+            'username' => 'required|string|alpha_dash|max:255|unique:admins,username,' . ($role === 'Admin' ? $id : 'NULL') . ',id' .
+                          '|unique:counselors,username,' . ($role === 'Counselor' ? $id : 'NULL') . ',id' .
+                          '|unique:students,username,' . ($role === 'Student' ? $id : 'NULL') . ',id',
+            'email' => 'required|email|unique:admins,email,' . ($role === 'Admin' ? $id : 'NULL') . ',id' .
+                       '|unique:counselors,email,' . ($role === 'Counselor' ? $id : 'NULL') . ',id' .
+                       '|unique:students,email,' . ($role === 'Student' ? $id : 'NULL') . ',id',
             'password' => 'nullable|min:6'
         ]);
 
         $data = [
             'name' => $request->name,
+            'username' => $request->username,
             'email' => $request->email
         ];
 

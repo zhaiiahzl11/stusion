@@ -40,6 +40,7 @@
             <thead>
                 <tr class="border-b border-gray-200 bg-gray-50">
                     <th class="p-4 text-sm font-medium text-gray-500">Name</th>
+                    <th class="p-4 text-sm font-medium text-gray-500">Username</th>
                     <th class="p-4 text-sm font-medium text-gray-500">Email</th>
                     <th class="p-4 text-sm font-medium text-gray-500">Role</th>
                     <th class="p-4 text-sm font-medium text-gray-500">Status</th>
@@ -57,6 +58,7 @@
                             <span class="font-medium text-gray-900">{{ $user->name }}</span>
                         </div>
                     </td>
+                    <td class="p-4 text-sm font-semibold text-gray-700">{{ $user->username }}</td>
                     <td class="p-4 text-sm text-gray-500">{{ $user->email }}</td>
                     <td class="p-4">
                         <span class="text-xs px-2.5 py-1 rounded-full font-medium {{ $user->role == 'Admin' ? 'bg-purple-50 text-purple-700 border border-purple-100' : ($user->role == 'Counselor' ? 'bg-emerald-50 text-emerald-700 border border-emerald-100' : 'bg-orange-50 text-[#d9733a] border border-orange-100') }}">{{ $user->role }}</span>
@@ -66,7 +68,7 @@
                     </td>
                     <td class="p-4 text-right">
                         <div class="flex items-center justify-end gap-1">
-                            <button onclick="openEditModal('{{ $user->id }}', '{{ addslashes($user->name) }}', '{{ addslashes($user->email) }}', '{{ $user->role }}')" class="p-2 text-gray-400 hover:text-gray-900 hover:bg-gray-100 rounded-md">
+                            <button onclick="openEditModal('{{ $user->id }}', '{{ addslashes($user->name) }}', '{{ addslashes($user->username) }}', '{{ addslashes($user->email) }}', '{{ $user->role }}')" class="p-2 text-gray-400 hover:text-gray-900 hover:bg-gray-100 rounded-md">
                                 <i data-lucide="edit" class="w-4 h-4"></i>
                             </button>
                             <form action="/admin/users/{{ $user->role }}/{{ $user->id }}" method="POST" class="inline">
@@ -112,6 +114,11 @@
                 <label class="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
                 <input type="text" name="name" required class="w-full h-10 px-3 bg-white border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#f48545]">
             </div>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Username</label>
+                <input type="text" name="username" required class="w-full h-10 px-3 bg-white border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#f48545]">
+            </div>
             
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
@@ -153,6 +160,11 @@
                 <label class="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
                 <input type="text" name="name" id="edit_name" required class="w-full h-10 px-3 bg-white border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#f48545]">
             </div>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Username</label>
+                <input type="text" name="username" id="edit_username" required class="w-full h-10 px-3 bg-white border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#f48545]">
+            </div>
             
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
@@ -191,8 +203,9 @@
         }
     }
 
-    function openEditModal(id, name, email, role) {
+    function openEditModal(id, name, username, email, role) {
         document.getElementById('edit_name').value = name;
+        document.getElementById('edit_username').value = username;
         document.getElementById('edit_email').value = email;
         document.getElementById('edit_form').action = '/admin/users/' + role + '/' + id;
         toggleModal('editUserModal');

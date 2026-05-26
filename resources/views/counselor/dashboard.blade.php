@@ -66,16 +66,55 @@
         </div>
         <div class="p-6">
             <div class="space-y-2">
-                <div class="flex items-center gap-3 p-3 bg-gray-50 rounded-xl cursor-pointer hover:bg-white hover:shadow-sm hover:border hover:border-[#f48545]/20 border border-transparent transition-all">
-                    <div class="w-2 h-2 rounded-full bg-[#f48545] shadow-sm"></div>
-                    <p class="text-sm text-gray-900 flex-1">New session assigned: Emma Wilson</p>
-                    <span class="text-xs text-gray-500">1h ago</span>
+                @php
+                    $alerts = collect();
+                    $counselorId = \Illuminate\Support\Facades\Auth::guard('counselor')->id();
+                    
+                    $todaySessionsCount = \App\Models\CounselingSession::where('counselor_id', $counselorId)
+                        ->whereDate('date', today())
+                        ->where('status', 'assigned')
+                        ->count();
+                        
+                    if ($todaySessionsCount > 0) {
+                        $alerts->push([
+                            'title' => 'Today\'s Sessions',
+                            'desc' => 'You have ' . $todaySessionsCount . ' session(s) scheduled for today.',
+                            'time' => 'Action required',
+                            'color' => 'bg-[#f48545]',
+                            'border' => 'border-[#f48545]/20'
+                        ]);
+                    }
+                    
+                    $upcomingSessionsCount = \App\Models\CounselingSession::where('counselor_id', $counselorId)
+                        ->whereDate('date', '>', today())
+                        ->where('status', 'assigned')
+                        ->count();
+                        
+                    if ($upcomingSessionsCount > 0) {
+                        $alerts->push([
+                            'title' => 'Upcoming Sessions',
+                            'desc' => 'You have ' . $upcomingSessionsCount . ' upcoming session(s).',
+                            'time' => 'Upcoming',
+                            'color' => 'bg-emerald-500',
+                            'border' => 'border-emerald-500/20'
+                        ]);
+                    }
+                @endphp
+
+                @forelse($alerts as $alert)
+                <div class="flex items-center gap-3 p-3 bg-gray-50 rounded-xl cursor-pointer hover:bg-white hover:shadow-sm hover:border hover:{{ $alert['border'] }} border border-transparent transition-all">
+                    <div class="w-2 h-2 rounded-full {{ $alert['color'] }} shadow-sm"></div>
+                    <div class="flex-1">
+                        <p class="text-sm font-semibold text-gray-900">{{ $alert['title'] }}</p>
+                        <p class="text-sm text-gray-600">{{ $alert['desc'] }}</p>
+                    </div>
+                    <span class="text-xs text-gray-500">{{ $alert['time'] }}</span>
                 </div>
-                <div class="flex items-center gap-3 p-3 bg-gray-50 rounded-xl cursor-pointer hover:bg-white hover:shadow-sm hover:border hover:border-emerald-500/20 border border-transparent transition-all">
-                    <div class="w-2 h-2 rounded-full bg-emerald-500 shadow-sm"></div>
-                    <p class="text-sm text-gray-900 flex-1">Availability approved for Mon-Wed</p>
-                    <span class="text-xs text-gray-500">3h ago</span>
+                @empty
+                <div class="text-center py-4 text-gray-500 text-sm">
+                    You're all caught up! No recent notifications.
                 </div>
+                @endforelse
             </div>
         </div>
     </div>

@@ -25,12 +25,57 @@
             
             <div class="max-h-80 overflow-y-auto">
                 @php
-                    // Fetch generic notifications based on role if possible
                     $alerts = collect();
+                    
                     if(isset($role) && $role === 'admin') {
-                        $pending = \App\Models\SessionRequest::where('status', 'pending')->with('student')->latest()->take(3)->get();
-                        foreach($pending as $p) {
-                            $alerts->push(['title' => 'New Session Request', 'desc' => 'From ' . ($p->student->name ?? 'Unknown'), 'time' => $p->created_at->diffForHumans(), 'link' => '/admin/schedule']);
+                        $pendingSessions = \App\Models\SessionRequest::where('status', 'pending')->count();
+                        if ($pendingSessions > 0) {
+                            $alerts->push([
+                                'title' => 'Pending Session Requests', 
+                                'desc' => 'You have ' . $pendingSessions . ' pending request(s) waiting to be assigned.', 
+                                'time' => 'Action required', 
+                                'link' => '/admin/schedule'
+                            ]);
+                        }
+                        
+                        $pendingLeaves = \App\Models\AvailabilityRequest::where('status', 'pending')->count();
+                        if ($pendingLeaves > 0) {
+                            $alerts->push([
+                                'title' => 'Pending Availability Requests', 
+                                'desc' => 'You have ' . $pendingLeaves . ' leave request(s) to review.', 
+                                'time' => 'Action required', 
+                                'link' => '/admin/schedule'
+                            ]);
+                        }
+                    } elseif(isset($role) && $role === 'counselor') {
+                        $counselorId = \Illuminate\Support\Facades\Auth::guard('counselor')->id();
+                        
+                        $todaySessions = \App\Models\CounselingSession::where('counselor_id', $counselorId)
+                            ->whereDate('date', today())
+                            ->where('status', 'assigned')
+                            ->count();
+                            
+                        if ($todaySessions > 0) {
+                            $alerts->push([
+                                'title' => 'Today\'s Sessions', 
+                                'desc' => 'You have ' . $todaySessions . ' session(s) scheduled for today.', 
+                                'time' => 'Today', 
+                                'link' => '/counselor/sessions'
+                            ]);
+                        }
+                        
+                        $upcomingSessions = \App\Models\CounselingSession::where('counselor_id', $counselorId)
+                            ->whereDate('date', '>', today())
+                            ->where('status', 'assigned')
+                            ->count();
+                            
+                        if ($upcomingSessions > 0) {
+                            $alerts->push([
+                                'title' => 'Upcoming Sessions', 
+                                'desc' => 'You have ' . $upcomingSessions . ' upcoming session(s).', 
+                                'time' => 'Upcoming', 
+                                'link' => '/counselor/sessions'
+                            ]);
                         }
                     }
                 @endphp

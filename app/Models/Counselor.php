@@ -8,6 +8,7 @@ use Illuminate\Notifications\Notifiable;
 class Counselor extends Authenticatable
 {
     use Notifiable;
+    protected $guarded = [];
     protected $hidden = [
         'password',
         'remember_token',

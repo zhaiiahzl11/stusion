@@ -7,6 +7,7 @@ use App\Http\Controllers\Counselor\CounselorController;
 use App\Http\Controllers\Student\StudentController;
 
 Route::get('/', [AuthController::class, 'login'])->name('login');
+Route::get('/login', [AuthController::class, 'login']);
 Route::post('/login', [AuthController::class, 'authenticate']);
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 

@@ -24,7 +24,7 @@ class AuthController extends Controller
         ]);
 
         $credentials = [
-            'name' => $request->input('username'),
+            'username' => $request->input('username'),
             'password' => $request->input('password')
         ];
 
@@ -72,14 +72,17 @@ class AuthController extends Controller
     {
         $request->validate([
             'role' => 'required|in:admin,counselor,student',
-            'username' => 'required|string|unique:admins,name|unique:counselors,name|unique:students,name',
-            'password' => 'required|min:6'
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:admins,email|unique:counselors,email|unique:students,email',
+            'username' => 'required|string|alpha_dash|max:255|unique:admins,username|unique:counselors,username|unique:students,username',
+            'password' => 'required|string|min:6|confirmed'
         ]);
 
         $role = $request->input('role');
         $data = [
-            'name' => $request->input('username'),
-            'email' => $request->input('username'),
+            'name' => $request->input('name'),
+            'email' => $request->input('email'),
+            'username' => $request->input('username'),
             'password' => Hash::make($request->input('password'))
         ];
 
